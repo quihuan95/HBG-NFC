@@ -7,7 +7,7 @@
 <div class="details">
 @if($employee->email)<div class="detail"><small>Email công việc</small><span><a href="mailto:{{ $employee->email }}">{{ $employee->email }}</a></span></div>@endif
 @if($employee->phone)<div class="detail"><small>Điện thoại</small><span><a href="tel:{{ preg_replace('/[^+0-9]/', '', $employee->phone) }}">{{ $employee->phone }}</a></span></div>@endif
-@if($employee->zalo)<div class="detail"><small>Zalo</small><span>{{ $employee->zalo }}</span></div>@endif
+@if($employee->zalo)<div class="detail"><small>Zalo</small><span><a href="{{ $employee->zalo_url }}" target="_blank" rel="noopener noreferrer">{{ $employee->zalo }}</a></span></div>@endif
 @if($employee->website)<div class="detail"><small>Website</small><span><a href="{{ $employee->website }}" rel="noopener noreferrer" target="_blank">{{ $employee->website }}</a></span></div>@endif
 @if($employee->bio)<div class="detail"><small>Giới thiệu</small><span style="white-space:pre-line">{{ $employee->bio }}</span></div>@endif
 <p style="text-align:center;margin:22px 0 0"><a class="btn gold" href="{{ route('card.show', $employee->code) }}?download=vcard" id="download-card">Lưu liên hệ vào danh bạ</a></p>

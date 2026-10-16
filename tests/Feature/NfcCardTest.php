@@ -97,6 +97,7 @@ class NfcCardTest extends TestCase
             'department' => 'Ban Giám Đốc',
             'email' => 'ceo@thehbg.com',
             'phone' => '+84901234567',
+            'zalo' => '0901234567',
             'active' => true,
         ]);
 
@@ -105,6 +106,7 @@ class NfcCardTest extends TestCase
         $response->assertSee('Nguyễn Văn A');
         $response->assertSee('Giám đốc Điều hành');
         $response->assertSee('Ban Giám Đốc');
+        $response->assertSee('https://zalo.me/0901234567');
     }
 
     public function test_public_card_returns_404_when_inactive(): void
