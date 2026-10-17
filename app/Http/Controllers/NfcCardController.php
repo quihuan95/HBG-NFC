@@ -27,6 +27,15 @@ class NfcCardController extends Controller
             if ($employee->website) {
                 $lines[] = 'URL:'.$clean($employee->website);
             }
+            if ($employee->facebook_url) {
+                $lines[] = 'X-SOCIALPROFILE;TYPE=facebook:'.$clean($employee->facebook_url);
+            }
+            if ($employee->linkedin_url) {
+                $lines[] = 'X-SOCIALPROFILE;TYPE=linkedin:'.$clean($employee->linkedin_url);
+            }
+            if ($employee->whatsapp_url) {
+                $lines[] = 'X-SOCIALPROFILE;TYPE=whatsapp:'.$clean($employee->whatsapp_url);
+            }
             $lines[] = 'END:VCARD';
 
             return response(implode("\r\n", $lines)."\r\n", 200, [

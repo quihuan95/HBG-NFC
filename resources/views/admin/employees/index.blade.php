@@ -1,7 +1,7 @@
 @extends('layouts.nfc')
 @section('title', 'Nhân viên | The HBG NFC')
 @section('body')
-<header class="top"><div class="brand">THE HBG <span style="font-weight:400;font-size:12px">/ NFC ADMIN</span></div><form method="post" action="{{ route('admin.logout') }}">@csrf<button class="btn secondary">Đăng xuất</button></form></header>
+<header class="top"><div style="display:flex;align-items:center;gap:12px"><div style="background:#fff;padding:5px 12px;border-radius:8px;display:flex;align-items:center"><img src="{{ asset('images/logo.png') }}" alt="THE HBG" style="height:24px;display:block"></div><span style="font-weight:700;font-size:13px;letter-spacing:1px;color:#fcebc2">/ NFC ADMIN</span></div><form method="post" action="{{ route('admin.logout') }}">@csrf<button class="btn secondary">Đăng xuất</button></form></header>
 <div class="container"><div class="actions" style="justify-content:space-between;margin-bottom:18px"><div><h1 style="margin:0 0 5px">Danh sách nhân viên</h1><span class="muted">Quản lý hồ sơ và URL gắn lên thẻ NFC</span></div><a class="btn gold" href="{{ route('admin.employees.create') }}">+ Thêm nhân viên</a></div>
 @if(session('success'))<div class="alert">{{ session('success') }}</div>@endif
 <div class="panel"><table><thead><tr><th>Mã</th><th>Nhân viên</th><th>Chức vụ</th><th>Trạng thái</th><th>Thao tác</th></tr></thead><tbody>

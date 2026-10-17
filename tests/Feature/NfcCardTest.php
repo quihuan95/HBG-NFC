@@ -62,6 +62,9 @@ class NfcCardTest extends TestCase
             'email' => 'a.nguyen@thehbg.com',
             'phone' => '0901234567',
             'zalo' => '0901234567',
+            'facebook' => 'nguyenvana.hbg',
+            'whatsapp' => '0901234567',
+            'linkedin' => 'nguyenvana',
             'website' => 'https://thehbg.com',
             'bio' => 'Kỹ sư phần mềm cao cấp',
             'active' => '1',
@@ -71,6 +74,9 @@ class NfcCardTest extends TestCase
         $this->assertNotNull($employee);
         $this->assertEquals('HBG001', $employee->code);
         $this->assertEquals('Nguyễn Văn A', $employee->name);
+        $this->assertEquals('nguyenvana.hbg', $employee->facebook);
+        $this->assertEquals('0901234567', $employee->whatsapp);
+        $this->assertEquals('nguyenvana', $employee->linkedin);
         $response->assertRedirect(route('admin.employees.edit', $employee));
     }
 
@@ -98,6 +104,9 @@ class NfcCardTest extends TestCase
             'email' => 'ceo@thehbg.com',
             'phone' => '+84901234567',
             'zalo' => '0901234567',
+            'facebook' => 'hbg.ceo',
+            'whatsapp' => '0901234567',
+            'linkedin' => 'hbg-ceo',
             'active' => true,
         ]);
 
@@ -107,6 +116,9 @@ class NfcCardTest extends TestCase
         $response->assertSee('Giám đốc Điều hành');
         $response->assertSee('Ban Giám Đốc');
         $response->assertSee('https://zalo.me/0901234567');
+        $response->assertSee('https://facebook.com/hbg.ceo');
+        $response->assertSee('https://wa.me/84901234567');
+        $response->assertSee('https://linkedin.com/in/hbg-ceo');
     }
 
     public function test_public_card_returns_404_when_inactive(): void
@@ -129,6 +141,9 @@ class NfcCardTest extends TestCase
             'job_title' => 'Chuyên viên Nhân sự',
             'email' => 'c.le@thehbg.com',
             'phone' => '0912345678',
+            'facebook' => 'lethic',
+            'whatsapp' => '0912345678',
+            'linkedin' => 'le-thi-c',
             'active' => true,
         ]);
 
@@ -137,6 +152,48 @@ class NfcCardTest extends TestCase
         $response->assertHeader('Content-Type', 'text/vcard; charset=utf-8');
         $this->assertStringContainsString('BEGIN:VCARD', $response->getContent());
         $this->assertStringContainsString('FN:Lê Thị C', $response->getContent());
+        $this->assertStringContainsString('X-SOCIALPROFILE;TYPE=facebook:https://facebook.com/lethic', $response->getContent());
+        $this->assertStringContainsString('X-SOCIALPROFILE;TYPE=whatsapp:https://wa.me/84912345678', $response->getContent());
+        $this->assertStringContainsString('X-SOCIALPROFILE;TYPE=linkedin:https://linkedin.com/in/le-thi-c', $response->getContent());
         $this->assertStringContainsString('END:VCARD', $response->getContent());
+    }
+
+    public function test_public_card_renders_with_minimal_data(): void
+    {
+        Employee::create([
+            'code' => 'HBG004',
+            'name' => 'Hoàng Văn D',
+            'active' => true,
+        ]);
+
+        $response = $this->get('/HBG004');
+        $response->assertStatus(200);
+        $response->assertSee('Hoàng Văn D');
+        $response->assertSee('H'); // Initials
+    }
+
+    public function test_admin_can_update_employee_social_links(): void
+    {
+        $admin = User::factory()->create();
+        $employee = Employee::create([
+            'code' => 'HBG005',
+            'name' => 'Ngô Thị E',
+            'active' => true,
+        ]);
+
+        $response = $this->actingAs($admin)->put(route('admin.employees.update', $employee), [
+            'name' => 'Ngô Thị E Updated',
+            'facebook' => 'https://facebook.com/ngothie',
+            'whatsapp' => '+84988776655',
+            'linkedin' => 'https://linkedin.com/in/ngothie',
+            'active' => '1',
+        ]);
+
+        $response->assertRedirect();
+        $employee->refresh();
+        $this->assertEquals('Ngô Thị E Updated', $employee->name);
+        $this->assertEquals('https://facebook.com/ngothie', $employee->facebook);
+        $this->assertEquals('+84988776655', $employee->whatsapp);
+        $this->assertEquals('https://linkedin.com/in/ngothie', $employee->linkedin);
     }
 }

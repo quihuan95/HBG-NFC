@@ -2,7 +2,11 @@
 @section('title', 'Đăng nhập quản trị | The HBG')
 @section('body')
 <div class="container" style="max-width:450px;margin-top:8vh">
- <div class="panel"><div class="brand" style="color:#224086">THE HBG</div><h2>Đăng nhập quản trị</h2>
+ <div class="panel">
+  <div style="text-align:center;margin-bottom:20px">
+   <img src="{{ asset('images/logo.png') }}" alt="THE HBG" style="height:48px;max-width:100%;object-fit:contain">
+  </div>
+  <h2>Đăng nhập quản trị</h2>
  <p class="muted">Hệ thống hồ sơ thẻ nhân viên NFC</p>
  <form method="post" action="{{ route('admin.login') }}">@csrf
   <div class="field"><label>Email</label><input class="input" type="email" name="email" value="{{ old('email') }}" autocomplete="username" required></div>
