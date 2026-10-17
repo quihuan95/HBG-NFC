@@ -31,6 +31,7 @@ class EmployeeRequest extends FormRequest
             'zalo' => ['nullable', 'string', 'max:100'],
             'facebook' => ['nullable', 'string', 'max:255'],
             'whatsapp' => ['nullable', 'string', 'max:100'],
+            'viber' => ['nullable', 'string', 'max:100'],
             'linkedin' => ['nullable', 'string', 'max:255'],
             'website' => ['nullable', 'url', 'starts_with:https://', 'max:255'],
             'bio' => ['nullable', 'string', 'max:1500'],

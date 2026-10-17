@@ -196,4 +196,38 @@ class NfcCardTest extends TestCase
         $this->assertEquals('+84988776655', $employee->whatsapp);
         $this->assertEquals('https://linkedin.com/in/ngothie', $employee->linkedin);
     }
+
+    public function test_public_card_renders_viber_and_profile_qr_and_official_facebook(): void
+    {
+        $employee = Employee::create([
+            'code' => 'HBG006',
+            'name' => 'Hoàng Viber',
+            'phone' => '0901234567',
+            'viber' => '0901234567',
+            'active' => true,
+        ]);
+
+        $response = $this->get('/HBG006');
+        $response->assertStatus(200);
+        $response->assertSee('viber://chat?number=%2B84901234567', false);
+        $response->assertSee('https://www.facebook.com/hoabinhgroupofficial/', false);
+        $response->assertSee('https://profile.hoabinh-group.com/', false);
+        $response->assertSee('Hồ sơ năng lực tập đoàn');
+        $response->assertSee('Thông tin thêm');
+    }
+
+    public function test_vcard_download_includes_viber(): void
+    {
+        Employee::create([
+            'code' => 'HBG007',
+            'name' => 'Trịnh Viber',
+            'viber' => '0988776655',
+            'active' => true,
+        ]);
+
+        $response = $this->get('/HBG007?download=vcard');
+        $response->assertStatus(200);
+        $this->assertStringContainsString('X-SOCIALPROFILE;TYPE=viber:viber://chat?number=%2B84988776655', $response->getContent());
+        $this->assertStringContainsString('ORG:HoaBinh Group', $response->getContent());
+    }
 }

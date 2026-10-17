@@ -14,7 +14,7 @@ class NfcCardController extends Controller
         $employee = Employee::query()->where('code', strtoupper($code))->where('active', true)->firstOrFail();
         if ($request->query('download') === 'vcard') {
             $clean = fn (?string $value) => str_replace(['\\', "\r", "\n", ';', ','], ['\\\\', '', '\\n', '\\;', '\\,'], $value ?? '');
-            $lines = ['BEGIN:VCARD', 'VERSION:3.0', 'FN:'.$clean($employee->name), 'ORG:THE HBG'];
+            $lines = ['BEGIN:VCARD', 'VERSION:3.0', 'FN:'.$clean($employee->name), 'ORG:HoaBinh Group'];
             if ($employee->job_title) {
                 $lines[] = 'TITLE:'.$clean($employee->job_title);
             }
@@ -35,6 +35,9 @@ class NfcCardController extends Controller
             }
             if ($employee->whatsapp_url) {
                 $lines[] = 'X-SOCIALPROFILE;TYPE=whatsapp:'.$clean($employee->whatsapp_url);
+            }
+            if ($employee->viber_url) {
+                $lines[] = 'X-SOCIALPROFILE;TYPE=viber:'.$clean($employee->viber_url);
             }
             $lines[] = 'END:VCARD';
 

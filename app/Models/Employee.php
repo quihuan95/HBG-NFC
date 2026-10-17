@@ -8,7 +8,7 @@ class Employee extends Model
 {
     protected $fillable = [
         'code', 'name', 'job_title', 'department', 'email', 'phone',
-        'zalo', 'facebook', 'whatsapp', 'linkedin', 'website', 'bio', 'photo_path', 'active',
+        'zalo', 'facebook', 'whatsapp', 'viber', 'linkedin', 'website', 'bio', 'photo_path', 'active',
     ];
 
     protected $casts = ['active' => 'boolean'];
@@ -36,11 +36,11 @@ class Employee extends Model
 
     public function getFacebookUrlAttribute(): ?string
     {
-        if (blank($this->facebook)) {
-            return null;
-        }
+        $fb = trim($this->facebook ?? '');
 
-        $fb = trim($this->facebook);
+        if (blank($fb)) {
+            return 'https://www.facebook.com/hoabinhgroupofficial/';
+        }
 
         if (str_starts_with($fb, 'http://') || str_starts_with($fb, 'https://')) {
             return $fb;
@@ -51,6 +51,27 @@ class Employee extends Model
         }
 
         return 'https://facebook.com/'.ltrim($fb, '@/');
+    }
+
+    public function getViberUrlAttribute(): ?string
+    {
+        if (blank($this->viber)) {
+            return null;
+        }
+
+        $viber = trim($this->viber);
+
+        if (str_starts_with($viber, 'http://') || str_starts_with($viber, 'https://') || str_starts_with($viber, 'viber://')) {
+            return $viber;
+        }
+
+        $digits = preg_replace('/[^0-9]/', '', $viber);
+
+        if (str_starts_with($digits, '0') && strlen($digits) === 10) {
+            $digits = '84'.substr($digits, 1);
+        }
+
+        return 'viber://chat?number=%2B'.$digits;
     }
 
     public function getWhatsappUrlAttribute(): ?string
