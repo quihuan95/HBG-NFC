@@ -1,7 +1,7 @@
 @extends('layouts.nfc')
 @section('title', 'Đăng nhập quản trị | The HBG')
 @section('body')
-<div class="container" style="max-width:450px;margin-top:8vh">
+<div class="container login-shell" style="max-width:450px;margin-top:8vh">
  <div class="panel">
   <div style="text-align:center;margin-bottom:20px">
    <img src="{{ asset('images/logo.png') }}" alt="THE HBG" style="height:48px;max-width:100%;object-fit:contain">

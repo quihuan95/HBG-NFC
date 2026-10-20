@@ -9,10 +9,12 @@
         <span style="font-weight:700;font-size:13px;letter-spacing:1px;color:#93c5fd">/ NFC PRIVATE ADMIN</span>
         <span style="font-size:11px;background:rgba(255,255,255,0.1);padding:3px 8px;border-radius:999px;color:#cbd5e1">/admin/minh</span>
     </div>
-    <div style="display:flex;align-items:center;gap:14px">
+    <nav class="top-nav">
+        <a href="{{ route('admin.minh.index') }}" style="color:#93c5fd;font-size:13px;text-decoration:none">Danh sách thẻ</a>
+        <a href="{{ route('admin.notifications.index') }}" style="color:#93c5fd;font-size:13px;text-decoration:none">Thông báo</a>
         <a href="{{ route('admin.employees.index') }}" style="color:#94a3b8;font-size:13px;text-decoration:none">🏢 Về quản trị HBG</a>
         <form method="post" action="{{ route('admin.minh.logout') }}">@csrf<button class="btn secondary" style="padding:7px 14px;font-size:13px">Đăng xuất</button></form>
-    </div>
+    </nav>
 </header>
 
 <div class="container">
@@ -191,7 +193,7 @@
                 @error('bio')<div class="error">{{ $message }}</div>@enderror
             </div>
 
-            <div class="actions" style="margin-top:20px">
+            <div class="actions form-actions" style="margin-top:20px">
                 <button class="btn gold">{{ $card->exists ? 'Lưu thay đổi' : 'Tạo thẻ cá nhân' }}</button>
                 <a class="btn secondary" href="{{ route('admin.minh.index') }}">Hủy</a>
             </div>

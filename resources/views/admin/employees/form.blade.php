@@ -1,7 +1,7 @@
 @extends('layouts.nfc')
 @section('title', ($employee->exists ? 'Sửa' : 'Thêm').' nhân viên | The HBG')
 @section('body')
-<header class="top"><div style="display:flex;align-items:center;gap:12px"><div style="background:#fff;padding:5px 12px;border-radius:8px;display:flex;align-items:center"><img src="{{ asset('images/logo.png') }}" alt="THE HBG" style="height:24px;display:block"></div><span style="font-weight:700;font-size:13px;letter-spacing:1px;color:#fcebc2">/ NFC ADMIN</span></div><form method="post" action="{{ route('admin.logout') }}">@csrf<button class="btn secondary">Đăng xuất</button></form></header>
+<header class="top"><div style="display:flex;align-items:center;gap:12px"><div style="background:#fff;padding:5px 12px;border-radius:8px;display:flex;align-items:center"><img src="{{ asset('images/logo.png') }}" alt="THE HBG" style="height:24px;display:block"></div><span style="font-weight:700;font-size:13px;letter-spacing:1px;color:#fcebc2">/ NFC ADMIN</span></div><nav class="top-nav"><a href="{{ route('admin.employees.index') }}">Nhân viên</a><a href="{{ route('admin.notifications.index') }}">Thông báo</a><form method="post" action="{{ route('admin.logout') }}">@csrf<button class="btn secondary">Đăng xuất</button></form></nav></header>
 <div class="container"><a href="{{ route('admin.employees.index') }}">← Danh sách nhân viên</a><h1>{{ $employee->exists ? 'Cập nhật hồ sơ' : 'Tạo hồ sơ nhân viên' }}</h1>
 @if(session('success'))<div class="alert">{{ session('success') }}</div>@endif
 @if($errors->any())<div class="error" style="margin-bottom:18px">Có lỗi dữ liệu. Kiểm tra các trường bên dưới.</div>@endif
@@ -27,6 +27,6 @@
 <div class="field"><label>Trạng thái</label><label style="font-weight:400"><input type="checkbox" name="active" value="1" {{ old('active', $employee->exists ? $employee->active : true) ? 'checked' : '' }}> Hiển thị hồ sơ công khai</label></div>
 </div>
 <div class="field"><label>Giới thiệu ngắn</label><textarea class="input" rows="4" name="bio" maxlength="1500">{{ old('bio', $employee->bio) }}</textarea>@error('bio')<div class="error">{{ $message }}</div>@enderror</div>
-<div class="actions"><button class="btn">{{ $employee->exists ? 'Lưu thay đổi' : 'Tạo nhân viên' }}</button><a class="btn secondary" href="{{ route('admin.employees.index') }}">Hủy</a></div>
+<div class="actions form-actions"><button class="btn">{{ $employee->exists ? 'Lưu thay đổi' : 'Tạo nhân viên' }}</button><a class="btn secondary" href="{{ route('admin.employees.index') }}">Hủy</a></div>
 </form></div></div>
 @endsection
