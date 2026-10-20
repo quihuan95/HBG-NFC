@@ -1168,5 +1168,6 @@
             }
         }
     </script>
+    @include('partials.web-push')
 </body>
 </html>

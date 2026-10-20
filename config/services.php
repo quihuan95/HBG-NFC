@@ -35,4 +35,11 @@ return [
         ],
     ],
 
+    'web_push' => [
+        'subject' => env('VAPID_SUBJECT', 'mailto:admin@thehbg.com'),
+        'public_key' => env('VAPID_PUBLIC_KEY'),
+        'private_key' => env('VAPID_PRIVATE_KEY'),
+        'openssl_conf' => env('WEB_PUSH_OPENSSL_CONF'),
+    ],
+
 ];

@@ -4,6 +4,8 @@ use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 
+use Illuminate\Http\Request;
+
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
         web: __DIR__.'/../routes/web.php',
@@ -13,8 +15,8 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->trustProxies(at: '*');
         $middleware->redirectTo(
-            guests: '/admin/login',
-            users: '/admin/employees'
+            guests: fn (Request $request) => $request->is('admin/minh*') ? route('admin.minh.login') : route('login'),
+            users: fn (Request $request) => $request->is('admin/minh*') ? route('admin.minh.index') : route('admin.employees.index'),
         );
     })
     ->withExceptions(function (Exceptions $exceptions) {
