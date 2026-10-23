@@ -39,5 +39,7 @@ class DatabaseSeeder extends Seeder
                 'active' => true,
             ]
         );
+
+        $this->call(EmployeeSeeder::class);
     }
 }

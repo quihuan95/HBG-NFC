@@ -2,13 +2,12 @@
 
 $logPath = 'D:\\Code\\logs\\cursor-task-log.md';
 
-$logEntry = "\n\n## 2026-10-19 17:49 - Tạo trang đăng nhập riêng biệt cho phân hệ quản trị /admin/minh\n\n"
+$logEntry = "\n\n## 2026-10-23 09:04 - Thêm checkbox chọn nhân viên để xuất mã QR hàng loạt\n\n"
     . "- **Project:** TheHBG-NFC\n"
     . "- **Đã làm:**\n"
-    . "  - Tạo Controller `MinhAuthController` phụ trách đăng nhập (`showLogin`, `login`) và đăng xuất (`logout`) dành riêng cho phân hệ cá nhân tại `/admin/minh/login` và `/admin/minh/logout`.\n"
-    . "  - Thiết kế giao diện đăng nhập riêng biệt `resources/views/admin/minh_cards/login.blade.php` với phong cách cá nhân hiện đại (dark theme, glassmorphism), tách biệt hoàn toàn nhận diện thương hiệu HBG.\n"
-    . "  - Cập nhật middleware định tuyến tại `bootstrap/app.php` tự động phân luồng: truy cập trang `/admin/minh*` khi chưa đăng nhập sẽ chuyển hướng về `/admin/minh/login`, còn các trang admin công ty chuyển về `/admin/login`.\n"
-    . "  - Bổ sung 5 kịch bản kiểm thử Feature trong `MinhCardTest` bao quát toàn bộ luồng đăng nhập, đăng xuất, chuyển hướng khách và người dùng; toàn bộ 27/27 tests pass 100% (114 assertions).\n";
+    . "  - Bổ sung cột checkbox trong bảng danh sách nhân viên (`index.blade.php`), hỗ trợ nút 'Chọn tất cả' (Select All) và tính năng bỏ chọn.\n"
+    . "  - Hiển thị thanh thông báo số lượng đang chọn và tự động đổi trạng thái nút thành `⬇ Xuất QR đã chọn (ZIP) (X)` khi có checkbox được tích chọn.\n"
+    . "  - Cập nhật route và controller `exportQrZip` tiếp nhận danh sách `ids` gửi lên để đóng gói ZIP chính xác những nhân viên được chọn; bổ sung 2 test case trong `QrCodeTest`, toàn bộ 43/43 tests pass 100%.\n";
 
 if (!file_exists(dirname($logPath))) {
     mkdir(dirname($logPath), 0777, true);

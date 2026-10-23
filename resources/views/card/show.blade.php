@@ -1069,7 +1069,7 @@
             <p class="modal-subtitle">Quét để mở thẻ NFC của {{ $employee->name }}</p>
 
             <div class="qr-card-container">
-                <img id="qrImage" src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&margin=0&data={{ urlencode(route('card.show', $employee->code)) }}" alt="QR Code">
+                <img id="qrImage" src="{{ route('card.qr', $employee->code) }}" alt="QR Code">
             </div>
 
             <div class="modal-actions">

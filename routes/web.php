@@ -34,6 +34,8 @@ Route::post('/admin/minh/logout', [MinhAuthController::class, 'logout'])->middle
 
 Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     Route::redirect('/', '/admin/employees');
+    Route::match(['get', 'post'], 'employees/export-qr-zip', [EmployeeController::class, 'exportQrZip'])->name('employees.export_qr_zip');
+    Route::get('employees/{employee}/qr', [EmployeeController::class, 'downloadQr'])->name('employees.download_qr');
     Route::resource('employees', EmployeeController::class)->except(['show', 'destroy']);
     Route::resource('minh', MinhCardController::class)->parameters(['minh' => 'card'])->except(['show']);
     Route::resource('notifications', PushMessageController::class)->except(['show']);
@@ -46,6 +48,10 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
 Route::get('/minh/{code}', [MinhCardPublicController::class, 'show'])
     ->where('code', '[A-Za-z0-9_-]{2,32}')
     ->name('minh.card.show');
+
+Route::get('/{code}/qr', [NfcCardController::class, 'qr'])
+    ->where('code', '[A-Za-z0-9_-]{2,32}')
+    ->name('card.qr');
 
 // QUAN TRỌNG: public catch-all phải đứng CUỐI file routes.
 Route::get('/{code}', [NfcCardController::class, 'show'])

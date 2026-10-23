@@ -18,6 +18,41 @@ class EmployeeController extends Controller
         return view('admin.employees.index', compact('employees'));
     }
 
+    public function exportQrZip(\Illuminate\Http\Request $request, \App\Services\QrCodeService $qrService): \Symfony\Component\HttpFoundation\Response
+    {
+        $query = Employee::query()->orderBy('id');
+
+        if ($request->filled('ids')) {
+            $ids = is_array($request->input('ids'))
+                ? $request->input('ids')
+                : explode(',', (string) $request->input('ids'));
+            $query->whereIn('id', array_filter($ids));
+        } else {
+            $query->where('active', true);
+        }
+
+        $employees = $query->get();
+
+        if ($employees->isEmpty()) {
+            return back()->with('error', 'Không tìm thấy nhân viên nào để xuất mã QR.');
+        }
+
+        $zipPath = $qrService->exportEmployeesToZip($employees);
+
+        return response()->download($zipPath, 'HBG_NFC_QRCodes_' . date('Ymd_His') . '.zip')->deleteFileAfterSend(true);
+    }
+
+    public function downloadQr(Employee $employee, \App\Services\QrCodeService $qrService): \Illuminate\Http\Response
+    {
+        $content = $qrService->generateForEmployee($employee, 'png', 500);
+        $fileName = $qrService->getEmployeeFileName($employee, 'png');
+
+        return response($content, 200, [
+            'Content-Type' => 'image/png',
+            'Content-Disposition' => 'attachment; filename="' . $fileName . '"',
+        ]);
+    }
+
     public function create(): View
     {
         return view('admin.employees.form', ['employee' => new Employee]);

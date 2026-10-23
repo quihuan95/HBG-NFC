@@ -49,4 +49,15 @@ class NfcCardController extends Controller
 
         return view('card.show', compact('employee'));
     }
+
+    public function qr(string $code, \App\Services\QrCodeService $qrService): Response
+    {
+        $employee = Employee::query()->where('code', strtoupper($code))->where('active', true)->firstOrFail();
+        $png = $qrService->generateForEmployee($employee, 'png', 300);
+
+        return response($png, 200, [
+            'Content-Type' => 'image/png',
+            'Cache-Control' => 'public, max-age=86400',
+        ]);
+    }
 }
