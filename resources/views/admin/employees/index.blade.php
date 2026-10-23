@@ -3,8 +3,6 @@
 @section('body')
 <header class="top"><div style="display:flex;align-items:center;gap:12px"><div style="background:#fff;padding:5px 12px;border-radius:8px;display:flex;align-items:center"><img src="{{ asset('images/logo.png') }}" alt="THE HBG" style="height:24px;display:block"></div><span style="font-weight:700;font-size:13px;letter-spacing:1px;color:#fcebc2">/ NFC ADMIN</span></div><nav class="top-nav"><a href="{{ route('admin.notifications.index') }}">Thông báo</a><a href="{{ route('admin.subscriptions.index') }}">Thiết bị</a><form method="post" action="{{ route('admin.logout') }}">@csrf<button class="btn secondary">Đăng xuất</button></form></nav></header>
 
-<form id="bulkExportForm" method="post" action="{{ route('admin.employees.export_qr_zip') }}">
-@csrf
 <div class="container">
     <div class="page-heading">
         <div>
@@ -12,9 +10,9 @@
             <span class="muted">Quản lý hồ sơ và URL gắn lên thẻ NFC</span>
         </div>
         <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
-            <button type="submit" class="btn secondary" id="btnExportZip" title="Tải xuống mã QR dưới dạng tệp ZIP">
+            <a class="btn secondary" href="{{ route('admin.employees.export_qr_zip') }}" title="Tải xuống tất cả mã QR dưới dạng tệp ZIP">
                 ⬇ Xuất toàn bộ QR (ZIP)
-            </button>
+            </a>
             <a class="btn gold" href="{{ route('admin.employees.create') }}">+ Thêm nhân viên</a>
         </div>
     </div>
@@ -23,9 +21,19 @@
     @if(session('error'))<div class="alert" style="background:#fde8e8;color:#9b1c1c">{{ session('error') }}</div>@endif
 
     <div class="panel">
-        <div id="selectionBar" style="display:none;background:#eef4ff;border:1px solid #c7d9f9;padding:10px 16px;border-radius:10px;margin-bottom:14px;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
-            <span style="font-weight:600;font-size:14px;color:#224086">Đang chọn: <strong id="selectedCount">0</strong> nhân viên</span>
-            <button type="button" class="btn secondary" style="min-height:32px;padding:4px 12px;font-size:13px" onclick="clearSelection()">Bỏ chọn tất cả</button>
+        <div id="selectionBar" style="display:none;background:#eef4ff;border:1px solid #c7d9f9;padding:12px 18px;border-radius:12px;margin-bottom:16px;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
+            <div style="display:flex;align-items:center;gap:10px">
+                <span style="font-weight:600;font-size:14px;color:#224086">Đang chọn: <strong id="selectedCount">0</strong> nhân viên</span>
+                <button type="button" class="btn secondary" style="min-height:30px;padding:3px 10px;font-size:12px" onclick="clearSelection()">Bỏ chọn</button>
+            </div>
+            <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+                <button type="button" class="btn gold" style="min-height:36px;padding:6px 14px;font-size:13px" onclick="submitBulkExport()">
+                    ⬇ Xuất QR đã chọn (ZIP)
+                </button>
+                <button type="button" class="btn danger" style="min-height:36px;padding:6px 14px;font-size:13px" onclick="submitBulkDelete()">
+                    🗑 Xóa nhân viên đã chọn
+                </button>
+            </div>
         </div>
 
         <table class="mobile-cards">
@@ -57,6 +65,11 @@
                         <a class="btn secondary" href="{{ route('admin.employees.download_qr', $employee) }}" title="Tải ảnh mã QR">QR</a>
                         <a class="btn secondary" href="{{ route('admin.employees.edit', $employee) }}">Sửa</a>
                         <a class="btn" href="{{ route('card.show', $employee->code) }}" target="_blank" rel="noopener">Xem thẻ</a>
+                        <form method="post" action="{{ route('admin.employees.destroy', $employee) }}" onsubmit="return confirm('Bạn có chắc chắn muốn xóa nhân viên {{ $employee->name }} ({{ $employee->code }})?')" style="display:inline">
+                            @csrf
+                            @method('DELETE')
+                            <button class="btn danger" type="submit">Xóa</button>
+                        </form>
                     </div>
                 </td>
             </tr>
@@ -68,15 +81,23 @@
         <div style="margin-top:20px">{{ $employees->links() }}</div>
     </div>
 </div>
+
+<form id="bulkActionForm" method="post" style="display:none">
+    @csrf
+    <input type="hidden" name="_method" id="bulkMethod" value="POST">
+    <div id="bulkInputsContainer"></div>
 </form>
 
 <script>
+function getSelectedIds() {
+    return Array.from(document.querySelectorAll('.employee-cb:checked')).map(cb => cb.value);
+}
+
 function updateSelectionState() {
     const checkboxes = document.querySelectorAll('.employee-cb');
     const checked = document.querySelectorAll('.employee-cb:checked');
     const selectAll = document.getElementById('selectAll');
     const count = checked.length;
-    const btn = document.getElementById('btnExportZip');
     const bar = document.getElementById('selectionBar');
     const countSpan = document.getElementById('selectedCount');
 
@@ -89,18 +110,6 @@ function updateSelectionState() {
 
     if (bar) {
         bar.style.display = count > 0 ? 'flex' : 'none';
-    }
-
-    if (btn) {
-        if (count > 0) {
-            btn.innerHTML = `⬇ Xuất QR đã chọn (ZIP) (${count})`;
-            btn.classList.remove('secondary');
-            btn.classList.add('gold');
-        } else {
-            btn.innerHTML = `⬇ Xuất toàn bộ QR (ZIP)`;
-            btn.classList.remove('gold');
-            btn.classList.add('secondary');
-        }
     }
 }
 
@@ -117,6 +126,51 @@ function clearSelection() {
     const selectAll = document.getElementById('selectAll');
     if (selectAll) selectAll.checked = false;
     updateSelectionState();
+}
+
+function submitBulkExport() {
+    const ids = getSelectedIds();
+    if (ids.length === 0) {
+        alert('Vui lòng chọn ít nhất một nhân viên.');
+        return;
+    }
+    const form = document.getElementById('bulkActionForm');
+    form.action = "{{ route('admin.employees.export_qr_zip') }}";
+    document.getElementById('bulkMethod').value = 'POST';
+    const container = document.getElementById('bulkInputsContainer');
+    container.innerHTML = '';
+    ids.forEach(id => {
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'ids[]';
+        input.value = id;
+        container.appendChild(input);
+    });
+    form.submit();
+}
+
+function submitBulkDelete() {
+    const ids = getSelectedIds();
+    if (ids.length === 0) {
+        alert('Vui lòng chọn ít nhất một nhân viên.');
+        return;
+    }
+    if (!confirm(`Bạn có chắc chắn muốn xóa ${ids.length} nhân viên đã chọn?\nHành động này không thể hoàn tác!`)) {
+        return;
+    }
+    const form = document.getElementById('bulkActionForm');
+    form.action = "{{ route('admin.employees.bulk_destroy') }}";
+    document.getElementById('bulkMethod').value = 'DELETE';
+    const container = document.getElementById('bulkInputsContainer');
+    container.innerHTML = '';
+    ids.forEach(id => {
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'ids[]';
+        input.value = id;
+        container.appendChild(input);
+    });
+    form.submit();
 }
 </script>
 @endsection

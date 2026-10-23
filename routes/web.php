@@ -36,7 +36,8 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     Route::redirect('/', '/admin/employees');
     Route::match(['get', 'post'], 'employees/export-qr-zip', [EmployeeController::class, 'exportQrZip'])->name('employees.export_qr_zip');
     Route::get('employees/{employee}/qr', [EmployeeController::class, 'downloadQr'])->name('employees.download_qr');
-    Route::resource('employees', EmployeeController::class)->except(['show', 'destroy']);
+    Route::delete('employees/bulk-delete', [EmployeeController::class, 'bulkDestroy'])->name('employees.bulk_destroy');
+    Route::resource('employees', EmployeeController::class)->except(['show']);
     Route::resource('minh', MinhCardController::class)->parameters(['minh' => 'card'])->except(['show']);
     Route::resource('notifications', PushMessageController::class)->except(['show']);
     Route::post('notifications/{notification}/send', [PushMessageController::class, 'send'])->name('notifications.send');

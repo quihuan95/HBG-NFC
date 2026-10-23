@@ -88,4 +88,42 @@ class EmployeeController extends Controller
 
         return back()->with('success', 'Đã cập nhật. Link NFC vẫn giữ nguyên.');
     }
+
+    public function destroy(Employee $employee): RedirectResponse
+    {
+        if ($employee->photo_path) {
+            Storage::disk('public')->delete($employee->photo_path);
+        }
+        $name = $employee->name;
+        $code = $employee->code;
+        $employee->delete();
+
+        return redirect()->route('admin.employees.index')->with('success', "Đã xóa nhân viên {$name} ({$code}).");
+    }
+
+    public function bulkDestroy(\Illuminate\Http\Request $request): RedirectResponse
+    {
+        $ids = $request->input('ids', []);
+        if (is_string($ids)) {
+            $ids = explode(',', $ids);
+        }
+        $ids = array_filter((array) $ids);
+
+        if (empty($ids)) {
+            return back()->with('error', 'Chưa chọn nhân viên nào để xóa.');
+        }
+
+        $employees = Employee::whereIn('id', $ids)->get();
+        $count = 0;
+
+        foreach ($employees as $employee) {
+            if ($employee->photo_path) {
+                Storage::disk('public')->delete($employee->photo_path);
+            }
+            $employee->delete();
+            $count++;
+        }
+
+        return redirect()->route('admin.employees.index')->with('success', "Đã xóa thành công {$count} nhân viên.");
+    }
 }

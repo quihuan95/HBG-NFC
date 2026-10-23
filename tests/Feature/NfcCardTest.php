@@ -230,4 +230,51 @@ class NfcCardTest extends TestCase
         $this->assertStringContainsString('X-SOCIALPROFILE;TYPE=viber:viber://chat?number=%2B84988776655', $response->getContent());
         $this->assertStringContainsString('ORG:HoaBinh Group', $response->getContent());
     }
+
+    public function test_admin_can_delete_employee(): void
+    {
+        $admin = User::factory()->create();
+        $employee = Employee::create([
+            'code' => 'HBG008',
+            'name' => 'Người Cần Xóa',
+            'active' => true,
+        ]);
+
+        $response = $this->actingAs($admin)->delete(route('admin.employees.destroy', $employee));
+
+        $response->assertRedirect(route('admin.employees.index'));
+        $response->assertSessionHas('success');
+        $this->assertDatabaseMissing('employees', ['code' => 'HBG008']);
+    }
+
+    public function test_admin_can_bulk_delete_employees(): void
+    {
+        $admin = User::factory()->create();
+        $emp1 = Employee::create(['code' => 'HBG009', 'name' => 'Người 1', 'active' => true]);
+        $emp2 = Employee::create(['code' => 'HBG010', 'name' => 'Người 2', 'active' => true]);
+        $emp3 = Employee::create(['code' => 'HBG011', 'name' => 'Người 3', 'active' => true]);
+
+        $response = $this->actingAs($admin)->delete(route('admin.employees.bulk_destroy'), [
+            'ids' => [$emp1->id, $emp2->id],
+        ]);
+
+        $response->assertRedirect(route('admin.employees.index'));
+        $response->assertSessionHas('success');
+        $this->assertDatabaseMissing('employees', ['id' => $emp1->id]);
+        $this->assertDatabaseMissing('employees', ['id' => $emp2->id]);
+        $this->assertDatabaseHas('employees', ['id' => $emp3->id]);
+    }
+
+    public function test_guest_cannot_delete_employee(): void
+    {
+        $employee = Employee::create([
+            'code' => 'HBG012',
+            'name' => 'Khách Không Được Xóa',
+            'active' => true,
+        ]);
+
+        $response = $this->delete(route('admin.employees.destroy', $employee));
+        $response->assertRedirect(route('login'));
+        $this->assertDatabaseHas('employees', ['id' => $employee->id]);
+    }
 }
