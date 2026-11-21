@@ -17,6 +17,27 @@ class NfcCardTest extends TestCase
         $response->assertRedirect('/admin/login');
     }
 
+    public function test_employee_index_uses_the_project_paginator(): void
+    {
+        $admin = User::factory()->create();
+
+        foreach (range(1, 34) as $index) {
+            Employee::create([
+                'code' => sprintf('PAGE%03d', $index),
+                'name' => "Nhân viên {$index}",
+                'active' => true,
+            ]);
+        }
+
+        $response = $this->actingAs($admin)->get('/admin/employees');
+
+        $response->assertOk();
+        $response->assertSee('class="pagination"', false);
+        $response->assertSee('Hiển thị 1–15 / 34 kết quả');
+        $response->assertSee('?page=2', false);
+        $response->assertDontSee('<svg', false);
+    }
+
     public function test_admin_can_login_with_valid_credentials(): void
     {
         $user = User::factory()->create([
